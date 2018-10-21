@@ -160,8 +160,8 @@ msgstr "使用 DNS 隧道"
 msgid "Use pdnsd"
 msgstr "使用 pdnsd"
 
-msgid "DNS Server IP and Port"
-msgstr "DNS 服务器地址和端口"
+msgid "Upstream DNS Server"
+msgstr "上游 DNS 服务器"
 
 msgid "Server Subscription"
 msgstr "服务器订阅"

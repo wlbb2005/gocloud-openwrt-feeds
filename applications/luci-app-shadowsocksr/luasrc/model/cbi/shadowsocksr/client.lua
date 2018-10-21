@@ -227,9 +227,18 @@ if has_bin("pdnsd") then
 end
 o.rmempty = false
 
-o = s:taboption("base", Value, "tunnel_forward", translate("DNS Server IP and Port"))
-o.default = "8.8.4.4:53"
-o.rmempty = false
+o = s:taboption("base", ListValue, "tunnel_forward", translate("Upstream DNS Server"))
+o:value("8.8.4.4:53", translate("Google Public DNS (8.8.4.4)"))
+o:value("8.8.8.8:53", translate("Google Public DNS (8.8.8.8)"))
+o:value("208.67.222.222:53", translate("OpenDNS (208.67.222.222)"))
+o:value("208.67.220.220:53", translate("OpenDNS (208.67.220.220)"))
+o:value("209.244.0.3:53", translate("Level 3 Public DNS (209.244.0.3)"))
+o:value("209.244.0.4:53", translate("Level 3 Public DNS (209.244.0.4)"))
+o:value("4.2.2.1:53", translate("Level 3 Public DNS (4.2.2.1)"))
+o:value("4.2.2.2:53", translate("Level 3 Public DNS (4.2.2.2)"))
+o:value("4.2.2.3:53", translate("Level 3 Public DNS (4.2.2.3)"))
+o:value("4.2.2.4:53", translate("Level 3 Public DNS (4.2.2.4)"))
+o:value("1.1.1.1:53", translate("Cloudflare DNS (1.1.1.1)"))
 
 if has_bin("ssr-subscribe") and has_bin("bash") then
     s:tab("subscribe", translate("Server Subscription"))
@@ -281,7 +290,6 @@ s:tab("wan_ac", translate("Interfaces - WAN"))
 
 o = s:taboption("wan_ac", Value, "wan_bp_list", translate("Bypassed IP List"))
 o:value("/dev/null", translate("NULL - As Global Proxy"))
-
 o.default = "/dev/null"
 o.rmempty = false
 
