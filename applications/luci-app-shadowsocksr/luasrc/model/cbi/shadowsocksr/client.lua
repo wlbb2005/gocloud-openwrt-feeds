@@ -16,12 +16,6 @@ local function has_udp_relay()
     return luci.sys.call("lsmod | grep -q TPROXY && command -v ip >/dev/null") == 0
 end
 
-local gfwmode = 0
-
-if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
-    gfwmode = 1
-end
-
 local tabname = {translate("Client"), translate("Status")};
 local tabmenu = {
     luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr"),
@@ -208,32 +202,30 @@ o.datatype = "uinteger"
 o:depends("enable_switch", "1")
 o.default = 3
 
-if gfwmode == 0 then
-    o = s:taboption("base", Flag, "tunnel_enable", translate("Enable Tunnel (DNS)"))
-    o.default = 0
-    o.rmempty = false
-    
-    o = s:taboption("base", Value, "tunnel_port", translate("Tunnel Port"))
-    o.datatype = "port"
-    o.default = 5300
-    o.rmempty = false
-else
-    o = s:taboption("base", ListValue, "gfw_enable", translate("Operating mode"))
-    o:value("router", translate("IP Route Mode"))
-    o:value("gfw", translate("GFW List Mode"))
-    o.rmempty = false
+o = s:taboption("base", ListValue, "run_mode", translate("Operating mode"))
+o:value("router", translate("IP Route Mode"))
+o:value("gfw", translate("GFW List Mode"))
+o.rmempty = false
 
-    o = s:taboption("base", DynamicList, "gfw_list", translate("Optional GFW domains"))
-    o:depends("gfw_enable", "gfw")
-    o.datatype = "hostname"
-    
-    o = s:taboption("base", ListValue, "pdnsd_enable", translate("DNS Mode"))
-    o:value("0", translate("Use DNS Tunnel"))
-    if has_bin("pdnsd") then
-        o:value("1", translate("Use pdnsd"))
-    end
-    o.rmempty = false
+o = s:taboption("base", Flag, "tunnel_enable", translate("Enable Tunnel (DNS)"))
+o:depends("run_mode", "router")
+o.default = 0
+
+o = s:taboption("base", Value, "tunnel_port", translate("Tunnel Port"))
+o:depends("run_mode", "router")
+o.datatype = "port"
+o.default = 5300
+
+o = s:taboption("base", DynamicList, "gfw_list", translate("Optional GFW domains"))
+o:depends("run_mode", "gfw")
+o.datatype = "hostname"
+
+o = s:taboption("base", ListValue, "pdnsd_enable", translate("DNS Mode"))
+o:value("0", translate("Use DNS Tunnel"))
+if has_bin("pdnsd") then
+    o:value("1", translate("Use pdnsd"))
 end
+o.rmempty = false
 
 o = s:taboption("base", Value, "tunnel_forward", translate("DNS Server IP and Port"))
 o.default = "8.8.4.4:53"
