@@ -32,16 +32,10 @@ end
 local uci = require "luci.model.uci".cursor()
 local m, s, o
 local reudp_run = 0
-local gfw_count = 0
 local ip_count = 0
-local gfwmode = 0
 
 local gfwlist_conf="/etc/dnsmasq.ssr/gfw_list.conf"
 local china_ip_conf="/etc/china_ssr.txt"
-
-if nixio.fs.access(gfwlist_conf) then
-    gfwmode = 1
-end
 
 local shadowsocksr = "shadowsocksr"
 -- html constants
@@ -52,10 +46,6 @@ bold_off = [[</strong>]]
 
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
-
-if gfwmode == 1 then
-    gfw_count = tonumber(sys.exec("cat " .. gfwlist_conf .. " | wc -l")) / 2
-end
 
 if nixio.fs.access(china_ip_conf) then
     ip_count = sys.exec("cat " .. china_ip_conf .. " | wc -l")
@@ -157,7 +147,8 @@ s = m:field(DummyValue, "baidu", translate("Baidu Connectivity"))
 s.value = translate("No Check")
 s.template = "shadowsocksr/check"
 
-if gfwmode == 1 then
+if nixio.fs.access(gfwlist_conf) then
+    local gfw_count = tonumber(sys.exec("cat " .. gfwlist_conf .. " | wc -l")) / 2
     s = m:field(DummyValue, "gfw_data", translate("GFW List Data"))
     s.rawhtml = true
     s.template = "shadowsocksr/refresh"
