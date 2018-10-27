@@ -3,7 +3,6 @@
 -- Licensed to the public under the GNU General Public License v3.
 
 local m, s, sec, o, kcp_enable
-local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
@@ -91,7 +90,7 @@ obfs = {
     "tls1.2_ticket_auth",
 }
 
-uci:foreach(shadowsocksr, "servers", function(s)
+uci:foreach("shadowsocksr", "servers", function(s)
     if s.alias then
         server_table[s[".name"]] = s.alias
         server_count = server_count + 1
@@ -261,6 +260,16 @@ if has_bin("ssr-subscribe") and has_bin("bash") then
     o.inputstyle = "reload"
     o.write = function()
         luci.sys.call("/usr/bin/ssr-subscribe >/dev/null 2>&1")
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "shadowsocksr", "client"))
+    end
+
+    o = s:taboption("subscribe", Button, "delete", translate("Server Status"))
+    o.description = string.format(translate("Server Count") ..  ": %d", server_count)
+    o.inputtitle = translate("Delete all severs")
+    o.inputstyle = "reload"
+    o.write = function()
+        uci:delete_all("shadowsocksr", "servers", function(s) return true end)
+        uci:save("shadowsocksr")
         luci.http.redirect(luci.dispatcher.build_url("admin", "network", "shadowsocksr", "client"))
     end
 end
