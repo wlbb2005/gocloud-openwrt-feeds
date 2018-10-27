@@ -35,7 +35,7 @@ loger() {
 
 add_ipset_conf() {
 	if [ -s /etc/adblocklist/adbypass ]; then
-		echo_date 添加白名单软连接...
+		loger 6 添加白名单软连接...
 		cat /etc/adblocklist/adbypass | sed "s/,/\n/g" | sed "s/^/ipset=&\/./g" | sed "s/$/\/white_kp_list/g"  >> /tmp/adbypass.conf
 		rm -f /etc/dnsmasq.kp/adbypass.conf
 		ln -sf /tmp/adbypass.conf /etc/dnsmasq.kp/adbypass.conf
@@ -66,14 +66,14 @@ add_ipset_conf() {
 
 remove_ipset_conf() {
 	if [ -L "/etc/dnsmasq.kp/adbypass.conf" ]; then
-		echo_date 移除白名单软连接...
+		loger 6 移除白名单软连接...
 		rm -f /tmp/adbypass.conf
 		rm -f /etc/dnsmasq.kp/adbypass.conf
 		dnsmasq_restart=1
 	fi
 
 	if [ -L "/etc/dnsmasq.kp/koolproxy_ipset.conf" ]; then
-		echo_date 移除黑名单软连接...
+		loger 6 移除黑名单软连接...
 		rm -f /etc/dnsmasq.kp/koolproxy_ipset.conf
 		dnsmasq_restart=1
 	fi
@@ -413,10 +413,10 @@ pre_start() {
 	load_nat
 	flush_ipt_rules && export_ipt_rules
 	add_cru
-	[ "$koolproxy_mode" == "1" ] && echo_date 选择【全局过滤模式】
-	[ "$koolproxy_mode" == "2" ] && echo_date 选择【IPSET过滤模式】
+	[ "$koolproxy_mode" == "1" ] && loger 6 选择【全局过滤模式】
+	[ "$koolproxy_mode" == "2" ] && loger 6 选择【IPSET过滤模式】
 	if [ "$koolproxy_mode" == "3" ]; then
-		echo_date 选择【视频过滤模式】
+		loger 6 选择【视频过滤模式】
 		sed -i '1s/1/0/g;2s/1/0/g' $KP_DIR/data/source.list
 	fi
 	return 1
