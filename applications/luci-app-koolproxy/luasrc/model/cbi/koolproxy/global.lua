@@ -63,8 +63,7 @@ e:value("kp.dat", translate("视频规则"))
 e:value("user.txt", translate("自定义规则"))
 
 e = t:taboption("base", MultiValue, "thirdparty_rules", translate("第三方规则"))
-e.optional = false
-e.rmempty = false
+e.optional = true
 e:value("easylistchina.txt", translate("ABP规则"))
 e:value("chengfeng.txt", translate("乘风规则"))
 e:value("fanboy.txt", translate("Fanboy规则"))
