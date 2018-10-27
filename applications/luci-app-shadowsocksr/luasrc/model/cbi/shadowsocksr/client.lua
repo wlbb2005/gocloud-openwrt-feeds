@@ -177,7 +177,7 @@ if has_bin("haproxy") and server_count > 1 then
 end
 for k, v in pairs(server_table) do o:value(k, v) end
 o.default = "nil"
-o.rmempty = false
+o.optional = true
 
 if has_udp_relay() then
     o = s:taboption("base", ListValue, "udp_relay_server", translate("UDP Relay Server"))

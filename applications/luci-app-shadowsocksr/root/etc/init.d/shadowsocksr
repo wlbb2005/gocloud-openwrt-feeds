@@ -132,7 +132,7 @@ start_rules() {
 	kcp_server=$server
 
 	local kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable)
-	if [ $kcp_enable = "1" ]; then
+	if [ "$kcp_enable" = "1" ]; then
 		kcp_flag=1
 	fi
 
@@ -170,8 +170,6 @@ start_rules() {
 		-b "$(uci_get_by_type access_control wan_bp_ips)" \
 		-w "$(uci_get_by_type access_control wan_fw_ips)" \
 		$(get_arg_out) $gfwmode $ARG_UDP
-
-	return $?
 }
 
 start_pdnsd() {
@@ -297,7 +295,7 @@ start_redir() {
 
 	#deal kcp
 	local kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable)
-	if [ $kcp_enable = "1" ]; then
+	if [ "$kcp_enable" = "1" ]; then
 		[ ! -f "/usr/bin/ssr-kcptun" ] && return 1
 
 		local kcp_str=$(/usr/bin/ssr-kcptun -v | grep kcptun | wc -l)
@@ -463,15 +461,13 @@ start_local() {
 }
 
 rules() {
-	[ $(uci_get_by_type global enable) = 0 ] && return 1
+	if [ $(uci_get_by_type global enable) = 0 ] || [ -z "$GLOBAL_SERVER" ]; then
+		return 1
+	fi
 	mkdir -p /var/run /var/etc
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 	[ "$UDP_RELAY_SERVER" = "same" ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
-	if start_rules; then
-		return 0
-	else
-		return 1
-	fi
+	start_rules
 }
 
 cron() {
@@ -549,8 +545,9 @@ start() {
 		GLOBAL_SERVER=$switch_server
 		switch_enable=1
 	fi
+
 	HAPROXY_MODE="0"
-	if [ $GLOBAL_SERVER = "__haproxy__" ]; then
+	if [ "$GLOBAL_SERVER" = "__haproxy__" ]; then
 		GLOBAL_SERVER=$(uci show -X shadowsocksr | grep servers | awk -F'[.=]' '{print $2}' | head -n 1)
 		HAPROXY_MODE="1"
 	fi
