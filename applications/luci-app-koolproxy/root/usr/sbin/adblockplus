@@ -1,9 +1,7 @@
 #!/bin/sh
 
-alias 'curl=curl --capath /etc/ssl/certs --connect-timeout 3'
-
 echo "$(date "+%F %T"): 正在下载adblockplus规则..."
-curl -sLo /tmp/adlist.txt https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt
+curl --connect-timeout 3 -sLo /tmp/adlist.txt https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt
 if [ "$?" == "0" ]; then
 	grep ^\|\|[^\*]*\^$ /tmp/adlist.txt | sed -e 's:||:address\=\/:' -e 's:\^:/0\.0\.0\.0:' > /tmp/dnsmasq.adblock
 	rm -f /tmp/adlist.txt

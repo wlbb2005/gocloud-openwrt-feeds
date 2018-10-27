@@ -16,8 +16,6 @@ CONFIG=koolproxy
 KP_DIR=/usr/share/koolproxy
 TMP_DIR=/tmp
 
-alias 'curl=curl --capath /etc/ssl/certs --connect-timeout 3'
-
 config_n_get() {
 	local ret=$(uci get $CONFIG.$1.$2 2>/dev/null)
 	echo ${ret:=$3}
@@ -186,7 +184,7 @@ __load_exrule() {
 		fi
 
 		if [ ! -f $KP_DIR/data/rules/$file ]; then
-			curl -sLo $TMP_DIR/$file $exrule
+			curl --connect-timeout 3 -sLo $TMP_DIR/$file $exrule
 			if [ "$?" == "0" ]; then
 				uci set koolproxy.$1.time="`date +%Y-%m-%d" "%H:%M`"
 				uci commit koolproxy
@@ -392,10 +390,10 @@ check_kp_rules() {
 	if [ ! -d $rules_dir ]; then
 		mkdir -p $tmp_dir && ln -sf $tmp_dir $rules_dir
 	fi
-	[ ! -f $rules_dir/kp.dat ] && curl -sLo $rules_dir/kp.dat https://kprule.com/kp.dat
-	[ ! -f $rules_dir/koolproxy.txt ] && curl -sLo $rules_dir/koolproxy.txt https://kprule.com/koolproxy.txt
-	[ ! -f $rules_dir/daily.txt ] && curl -sLo $rules_dir/daily.txt https://kprule.com/daily.txt
-	[ ! -f $KP_DIR/data/user.txt ] && curl -sLo $KP_DIR/data/user.txt https://kprule.com/user.txt
+	[ ! -f $rules_dir/kp.dat ] && curl --connect-timeout 3 -sLo $rules_dir/kp.dat https://kprule.com/kp.dat
+	[ ! -f $rules_dir/koolproxy.txt ] && curl --connect-timeout 3 -sLo $rules_dir/koolproxy.txt https://kprule.com/koolproxy.txt
+	[ ! -f $rules_dir/daily.txt ] && curl --connect-timeout 3 -sLo $rules_dir/daily.txt https://kprule.com/daily.txt
+	[ ! -f $KP_DIR/data/user.txt ] && curl --connect-timeout 3 -sLo $KP_DIR/data/user.txt https://kprule.com/user.txt
 }
 
 pre_start() {

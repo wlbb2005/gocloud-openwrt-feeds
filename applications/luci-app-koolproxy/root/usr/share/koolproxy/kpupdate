@@ -8,8 +8,6 @@ KP_DIR=/usr/share/koolproxy
 TMP_DIR=/tmp/koolproxy
 LOGFILE="/var/log/koolproxy.log"
 
-alias 'curl=curl --capath /etc/ssl/certs --connect-timeout 3'
-
 config_t_get() {
 	local index=0
 	[ -n "$4" ] && index=$4
@@ -46,7 +44,7 @@ __compare_file() {
 	echo $(date "+%F %T"): ------------------- $descript更新 ------------------- >>$LOGFILE
 	local filename=`basename $localPath`
 	local remotePath="$TMP_DIR/$filename"
-	curl -sLo "$remotePath" "$remoteUrl"
+	curl --connect-timeout 3 -sLo "$remotePath" "$remoteUrl"
 	if [ "$?" == "0" ]; then
 		if [ -f "$localPath" ]; then
 			localMD5=`md5sum "$localPath" | awk '{print $1}'`
