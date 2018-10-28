@@ -19,8 +19,8 @@ msgstr "停用"
 msgid "ShadowsocksR Client"
 msgstr "ShadowsocksR 客户端"
 
-msgid "Servers Setting"
-msgstr "服务器配置"
+msgid "Server Setting"
+msgstr "服务器管理"
 
 msgid "Edit - Remote Server"
 msgstr "编辑 - 远程服务器"
