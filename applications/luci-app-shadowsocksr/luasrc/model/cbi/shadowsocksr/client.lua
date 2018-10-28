@@ -242,6 +242,22 @@ o.datatype = "uinteger"
 o:depends("enable_switch", "1")
 o.default = 3
 
+-- [[ SOCKS5 Proxy ]]--
+if has_bin("ssr-local") then
+    o = s:taboption("advance", Flag, "enable_ssr_local", translate("Enable SOCKS5 Proxy"))
+    o.rmempty = false
+
+    o = s:taboption("advance", ListValue, "ssr_local_server", translate("[SOCKS5] SSR Server"))
+    for k, v in pairs(server_table) do o:value(k, v) end
+    o:depends("enable_ssr_local", "1")
+    o.default = ""
+
+    o = s:taboption("advance", Value, "ssr_local_port", translate("[SOCKS5] Listen Port"))
+    o.datatype = "port"
+    o:depends("enable_ssr_local", "1")
+    o.default = 1080
+end
+
 if has_bin("ssr-subscribe") and has_bin("bash") then
     s:tab("subscribe", translate("Server Subscription"))
 
@@ -274,23 +290,6 @@ if has_bin("ssr-subscribe") and has_bin("bash") then
         uci:save("shadowsocksr")
         luci.http.redirect(luci.dispatcher.build_url("admin", "network", "shadowsocksr", "client"))
     end
-end
-
--- [[ SOCKS5 Proxy ]]--
-if has_bin("ssr-local") then
-    s = m:section(TypedSection, "socks5_proxy", translate("SOCKS5 Proxy"))
-    s.anonymous = true
-
-    o = s:option(ListValue, "server", translate("Server"))
-    o:value("nil", translate("Disable"))
-    for k, v in pairs(server_table) do o:value(k, v) end
-    o.default = "nil"
-    o.rmempty = false
-
-    o = s:option(Value, "local_port", translate("Local Port"))
-    o.datatype = "port"
-    o.default = 1234
-    o.rmempty = false
 end
 
 -- [[ Access Control ]]--

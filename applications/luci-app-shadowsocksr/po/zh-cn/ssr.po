@@ -190,8 +190,14 @@ msgstr "服务器数目"
 msgid "Delete all severs"
 msgstr "删除所有服务器"
 
-msgid "SOCKS5 Proxy"
-msgstr "SOCKS5 代理"
+msgid "Enable SOCKS5 Proxy"
+msgstr "启用 SOCKS5 代理服务器"
+
+msgid "[SOCKS5] SSR Server"
+msgstr "【SOCKS5】SSR 服务器"
+
+msgid "[SOCKS5] Listen Port"
+msgstr "【SOCKS5】监听端口"
 
 msgid "Access Control"
 msgstr "访问控制"
@@ -264,6 +270,9 @@ msgstr "SSR 服务端"
 
 msgid "UDP Relay"
 msgstr "UDP 中继"
+
+msgid "SOCKS5 Proxy"
+msgstr "SOCKS5 代理"
 
 msgid "DNS Tunnel"
 msgstr "DNS 隧道"
