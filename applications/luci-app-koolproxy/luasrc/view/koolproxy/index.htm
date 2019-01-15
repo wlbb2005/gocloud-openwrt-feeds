@@ -5,11 +5,10 @@
 
 <% include("cbi/map") %>
 <script type="text/javascript">//<![CDATA[
-	XHR.poll(2, '<%=luci.dispatcher.build_url("admin", "services", "koolproxy", "status")%>', null,
-		function(x, result)
-		{
+	XHR.poll(2, '<%=luci.dispatcher.build_url("admin", "network", "koolproxy", "status")%>', null,
+		function (x, result) {
 			var status = document.getElementsByClassName('koolproxy_status');
-			status[0].innerHTML = result.koolproxy?'<b><font color=green><%=translate("RUNNING")%></font></b>':'<b><font color=red><%=translate("NOT RUNNING")%></font></b>';
+			status[0].innerHTML = result.koolproxy ? '<b><font color=green><%=translate("RUNNING")%></font></b>' : '<b><font color=red><%=translate("NOT RUNNING")%></font></b>';
 		}
 	);
 //]]>

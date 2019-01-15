@@ -4,6 +4,6 @@ function index()
 		return
 	end
 
-	entry({"admin","network","koolproxy"},cbi("koolproxy/global"),_("KP"),35).dependent=true
+	entry({"admin","network","koolproxy"},cbi("koolproxy/global"),_("KoolProxy"),35).dependent=true
 	entry({"admin","network","koolproxy","rss_rule"},cbi("koolproxy/rss_rule"), nil).leaf=true
 end
