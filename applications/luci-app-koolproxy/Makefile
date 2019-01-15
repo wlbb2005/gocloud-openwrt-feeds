@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-koolproxy
 PKG_VERSION:=3.8.4
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -18,10 +18,10 @@ define Build/Prepare
 	wget https://koolproxy.com/downloads/$(ARCH) -O $(PKG_BUILD_DIR)/koolproxy
 
 	mkdir -p $(PKG_BUILD_DIR)/rules
-	wget https://kprule.com/kp.dat -O $(PKG_BUILD_DIR)/rules/kp.dat
-	wget https://kprule.com/koolproxy.txt -O $(PKG_BUILD_DIR)/rules/koolproxy.txt
-	wget https://kprule.com/daily.txt -O $(PKG_BUILD_DIR)/rules/daily.txt
-	wget https://kprule.com/user.txt -O $(PKG_BUILD_DIR)/rules/user.txt
+	# wget https://kprule.com/kp.dat -O $(PKG_BUILD_DIR)/rules/kp.dat
+	# wget https://kprule.com/koolproxy.txt -O $(PKG_BUILD_DIR)/rules/koolproxy.txt
+	# wget https://kprule.com/daily.txt -O $(PKG_BUILD_DIR)/rules/daily.txt
+	# wget https://kprule.com/user.txt -O $(PKG_BUILD_DIR)/rules/user.txt
 endef
 
 define Build/Compile
