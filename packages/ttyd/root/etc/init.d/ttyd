@@ -6,7 +6,8 @@ SERVICE_DAEMONIZE=1
 
 start() {
 	logger -t TTYD 'Starting ttyd service'
-	service_start /usr/bin/ttyd /bin/login
+	lan_if=$(uci get network.lan.ipaddr)
+	service_start /usr/bin/ttyd -i $lan_if /bin/login
 	return 0
 }
 
