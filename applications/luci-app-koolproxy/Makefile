@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-koolproxy
 PKG_VERSION:=3.8.4
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -15,9 +15,9 @@ define Package/luci-app-koolproxy
 endef
 
 define Build/Prepare
-	wget https://koolproxy.com/downloads/$(ARCH) -O $(PKG_BUILD_DIR)/koolproxy
+	# wget https://koolproxy.com/downloads/$(ARCH) -O $(PKG_BUILD_DIR)/koolproxy
 
-	mkdir -p $(PKG_BUILD_DIR)/rules
+	# mkdir -p $(PKG_BUILD_DIR)/rules
 	# wget https://kprule.com/kp.dat -O $(PKG_BUILD_DIR)/rules/kp.dat
 	# wget https://kprule.com/koolproxy.txt -O $(PKG_BUILD_DIR)/rules/koolproxy.txt
 	# wget https://kprule.com/daily.txt -O $(PKG_BUILD_DIR)/rules/daily.txt
@@ -53,12 +53,10 @@ define Package/luci-app-koolproxy/install
 	$(INSTALL_DIR) $(1)/
 	cp -pR ./root/* $(1)/
 
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/koolproxy $(1)/usr/share/koolproxy/koolproxy
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/user.txt $(1)/usr/share/koolproxy/data/
+	# $(INSTALL_BIN) $(PKG_BUILD_DIR)/koolproxy $(1)/usr/share/koolproxy/koolproxy
+	# $(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/user.txt $(1)/usr/share/koolproxy/data/
 	$(INSTALL_DIR) $(1)/usr/share/koolproxy/data/rules
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/* $(1)/usr/share/koolproxy/data/rules/
-
-	find $(1) -name *.lua -exec luac -s -o {} {} \;
+	# $(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/* $(1)/usr/share/koolproxy/data/rules/
 endef
 
 $(eval $(call BuildPackage,luci-app-koolproxy))
