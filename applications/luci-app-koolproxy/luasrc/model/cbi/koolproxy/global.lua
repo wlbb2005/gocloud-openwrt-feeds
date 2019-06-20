@@ -16,7 +16,7 @@ else
 	status = translate("<font color=\"red\">未运行</font>")
 end
 
-o = Map("koolproxy", translate("KoolProxy"), translate("KoolProxy 是能识别 Adblock 规则的代理软件，可以过滤普通网页广告、视频广告、HTTPS 广告<br />Adblock Plus 的 Host 列表 + KoolProxy 黑名单模式运行更流畅上网体验，开启全局模式获取更好的过滤效果<br /><font color=\"red\">如果要为客户端过滤 HTTPS 广告，必须在客户端安装根证书。</font>"))
+o = Map("koolproxy", translate("KoolProxy"), translate("KoolProxy 是能识别 Adblock 规则的代理软件，可以过滤普通网页广告、视频广告、HTTPS 广告<br />Adblock Plus 的 Host 列表 + KoolProxy 黑名单模式运行更流畅上网体验，开启全局模式获取更好的过滤效果"))
 o.redirect = luci.dispatcher.build_url("admin/network/koolproxy")
 
 t = o:section(TypedSection, "global")
