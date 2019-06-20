@@ -47,10 +47,9 @@ e:value(2, translate("IPSET模式"))
 e = t:taboption("base", MultiValue, "koolproxy_rules", translate("内置规则"))
 e.optional = false
 e.rmempty = false
-e:value("koolproxy.txt", translate("静态规则"))
-e:value("daily.txt", translate("每日规则"))
-e:value("kp.dat", translate("视频规则"))
-e:value("user.txt", translate("自定义规则"))
+e:value("koolproxy.txt", translate(string.format("静态规则: <font color=\"green\">%s</font>", s)))
+e:value("kp.dat", translate(string.format("视频规则: <font color=\"green\">%s</font>", u)))
+e:value("user.txt", translate(string.format("自定义规则: <font color=\"green\">%s条</font>", h)))
 
 e = t:taboption("base", ListValue, "koolproxy_port", translate("端口控制"))
 e.default = 0
@@ -63,10 +62,10 @@ e:depends("koolproxy_port", "1")
 e.rmempty = false
 e.description = translate(string.format("<font color=\"red\"><strong>单端口:80&nbsp;&nbsp;多端口:80,443</strong></font>"))
 
-e=t:taboption("base",Flag,"koolproxy_host",translate("开启 Adblock Plus Host"))
+e=t:taboption("base", Flag, "koolproxy_host", translate("开启 Adblock"))
 e.default=0
-e:depends("koolproxy_mode","2")
-
+e:depends("koolproxy_mode", "2")
+e.description = translate(string.format("<font color=\"green\">Adblock Plus Host: %s条</font>", i))
 
 e = t:taboption("base", ListValue, "koolproxy_acl_default", translate("默认访问控制"))
 e.default = 1
@@ -76,9 +75,6 @@ e:value(1, translate("仅 HTTP"))
 e:value(2, translate("HTTP 和 HTTPS"))
 e:value(3, translate("所有端口"))
 e.description = translate(string.format("<font color=\"blue\"><strong>访问控制设置中其他主机的默认规则</strong></font>"))
-
-e = t:taboption("base", Button, "restart", translate("规则状态"))
-e.description = translate(string.format("<font color=\"green\">静态规则: %s<br />视频规则: %s<br />自定义规则: %s条<br />Host: %s条</font>", s, u, h, i))
 
 t:tab("white_weblist",translate("网站白名单设置"))
 
