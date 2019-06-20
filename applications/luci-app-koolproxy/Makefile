@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-koolproxy
 PKG_VERSION:=3.8.4
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -11,17 +11,14 @@ define Package/luci-app-koolproxy
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI support for koolproxy
-	DEPENDS:=+openssl-util +diffutils +ipset +iptables-mod-nat-extra +ca-certificates +curl
+	DEPENDS:=+ipset +iptables-mod-nat-extra
 endef
 
 define Build/Prepare
-	# wget https://koolproxy.com/downloads/$(ARCH) -O $(PKG_BUILD_DIR)/koolproxy
+	cp ./koolproxy/$(ARCH) $(PKG_BUILD_DIR)/koolproxy
 
-	# mkdir -p $(PKG_BUILD_DIR)/rules
-	# wget https://kprule.com/kp.dat -O $(PKG_BUILD_DIR)/rules/kp.dat
-	# wget https://kprule.com/koolproxy.txt -O $(PKG_BUILD_DIR)/rules/koolproxy.txt
-	# wget https://kprule.com/daily.txt -O $(PKG_BUILD_DIR)/rules/daily.txt
-	# wget https://kprule.com/user.txt -O $(PKG_BUILD_DIR)/rules/user.txt
+	mkdir -p $(PKG_BUILD_DIR)/rules
+	cp ./koolproxy/rules/* $(PKG_BUILD_DIR)/rules
 endef
 
 define Build/Compile
@@ -53,10 +50,10 @@ define Package/luci-app-koolproxy/install
 	$(INSTALL_DIR) $(1)/
 	cp -pR ./root/* $(1)/
 
-	# $(INSTALL_BIN) $(PKG_BUILD_DIR)/koolproxy $(1)/usr/share/koolproxy/koolproxy
-	# $(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/user.txt $(1)/usr/share/koolproxy/data/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/koolproxy $(1)/usr/share/koolproxy/koolproxy
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/user.txt $(1)/usr/share/koolproxy/data/
 	$(INSTALL_DIR) $(1)/usr/share/koolproxy/data/rules
-	# $(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/* $(1)/usr/share/koolproxy/data/rules/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/* $(1)/usr/share/koolproxy/data/rules/
 endef
 
 $(eval $(call BuildPackage,luci-app-koolproxy))

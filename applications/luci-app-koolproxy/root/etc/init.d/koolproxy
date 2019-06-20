@@ -162,49 +162,12 @@ lan_acess_control() {
 	fi
 }
 
-__load_exrule() {
-	local file
-	local exrule
-	local enable
-	config_get file $1 file
-	config_get exrule $1 url
-	config_get enable $1 load
-	if [ -n "$exrule" ]; then
-		if [ $enable -ne 1 ]; then
-			[ -n "$file" ] && [ -f $KP_DIR/data/rules/$file ] && rm -f $KP_DIR/data/rules/$file
-			uci set koolproxy.$1.time=""
-			uci commit koolproxy
-			return
-		fi
-
-		if [ -z "$file" ]; then
-			file=$(echo $exrule |awk -F "/" '{print $NF}')
-			uci set koolproxy.$1.file="$file"
-			uci commit koolproxy
-		fi
-
-		if [ ! -f $KP_DIR/data/rules/$file ]; then
-			curl --connect-timeout 3 -sLo $TMP_DIR/$file $exrule
-			if [ "$?" == "0" ]; then
-				uci set koolproxy.$1.time="`date +%Y-%m-%d" "%H:%M`"
-				uci commit koolproxy
-				mv $TMP_DIR/$file $KP_DIR/data/rules/$file
-			else
-				echo "koolproxy download rule $file failed!"
-				[ -f $TMP_DIR/$file ] && rm -f $TMP_DIR/$file
-			fi
-		fi
-		cat $KP_DIR/data/rules/$file >>$KP_DIR/data/rules/user.txt
-	fi
-}
-
 load_user_rules() {
 	cp $KP_DIR/data/user.txt $KP_DIR/data/rules/user.txt
-	config_foreach __load_exrule rss_rule
 }
 
 load_rules() {
-	sed -i '1,7s/1/0/g' $KP_DIR/data/source.list
+	sed -i '1,4s/1/0/g' $KP_DIR/data/source.list
 
 	local rulelist="$(uci -q get koolproxy.@global[0].koolproxy_rules)"
 	for rule in $rulelist
@@ -221,22 +184,6 @@ load_rules() {
 			;;
 			user.txt)
 				sed -i '4s/0/1/g' $KP_DIR/data/source.list
-			;;
-		esac
-	done
-
-	local rulelist="$(uci -q get koolproxy.@global[0].thirdparty_rules)"
-	for rule in $rulelist
-	do
-		case "$rule" in
-			easylistchina.txt)
-				sed -i '5s/0/1/g' $KP_DIR/data/source.list
-			;;
-			chengfeng.txt)
-				sed -i '6s/0/1/g' $KP_DIR/data/source.list
-			;;
-			fanboy.txt)
-				sed -i '7s/0/1/g' $KP_DIR/data/source.list
 			;;
 		esac
 	done
@@ -332,26 +279,6 @@ load_nat() {
 	[ "$koolproxy_mode" == "2" ] && iptables -t nat -I PREROUTING 1 -p tcp -m set --match-set black_koolproxy dst -j KOOLPROXY
 }
 
-add_cru() {
-	time=$(config_t_get global time_update)
-	wirtecron=$(cat /etc/crontabs/root | grep "00 $time * * *" | grep kpupdate)
-	if [ -z "$wirtecron" ];then
-		sed -i '/kpupdate/d' /etc/crontabs/root >/dev/null 2>&1
-		echo "0 $time * * * /usr/share/koolproxy/kpupdate" >> /etc/crontabs/root
-	fi
-}
-
-del_cru() {
-	sed -i '/kpupdate/d' /etc/crontabs/root >/dev/null 2>&1
-}
-
-detect_cert(){
-	if [ ! -f $KP_DIR/data/private/ca.key.pem ]; then
-		loger 6 "检测到首次运行，开始生成koolproxy证书，用于https过滤！"
-		cd $KP_DIR/data && sh gen_ca.sh
-	fi
-}
-
 flush_nat() {
 	loger 6 "移除nat规则..."
 	cd $TMP_DIR
@@ -384,36 +311,12 @@ flush_ipt_rules() {
 	return 0
 }
 
-check_kp_bin(){
-	if [ ! -f $KP_DIR/koolproxy ]; then
-		loger 6 "未找到koolproxy二进制文件，开始下载..."
-		curl --connect-timeout 3 -sLo $KP_DIR/koolproxy https://koolproxy.com/downloads/mipsel
-		chmod +x $KP_DIR/koolproxy
-	fi
-}
-
-check_kp_rules() {
-	local rules_dir=$KP_DIR/data/rules
-	local tmp_dir=/tmp/koolproxy/rules
-	if [ ! -d $rules_dir ]; then
-		mkdir -p $tmp_dir && ln -sf $tmp_dir $rules_dir
-	fi
-	[ ! -f $rules_dir/kp.dat ] && curl --connect-timeout 3 -sLo $rules_dir/kp.dat https://kprule.com/kp.dat
-	[ ! -f $rules_dir/koolproxy.txt ] && curl --connect-timeout 3 -sLo $rules_dir/koolproxy.txt https://kprule.com/koolproxy.txt
-	[ ! -f $rules_dir/daily.txt ] && curl --connect-timeout 3 -sLo $rules_dir/daily.txt https://kprule.com/daily.txt
-	[ ! -f $KP_DIR/data/user.txt ] && curl --connect-timeout 3 -sLo $KP_DIR/data/user.txt https://kprule.com/user.txt
-}
-
 pre_start() {
 	mkdir -p /var/etc /etc/dnsmasq.kp
 	load_config
 	[ $? -ne 1 ] && return 0
 
-	check_kp_bin
-	check_kp_rules
-
 	iptables -t nat -C PREROUTING -p tcp -j KOOLPROXY 2>/dev/null && [ $? -eq 0 ] && return 0;
-	detect_cert
 	load_rules
 	load_user_rules
 	add_ipset_conf && restart_dnsmasq
@@ -421,13 +324,8 @@ pre_start() {
 	add_white_black_ip
 	load_nat
 	flush_ipt_rules && export_ipt_rules
-	add_cru
 	[ "$koolproxy_mode" == "1" ] && loger 6 选择【全局过滤模式】
 	[ "$koolproxy_mode" == "2" ] && loger 6 选择【IPSET过滤模式】
-	if [ "$koolproxy_mode" == "3" ]; then
-		loger 6 选择【视频过滤模式】
-		sed -i '1s/1/0/g;2s/1/0/g' $KP_DIR/data/source.list
-	fi
 	return 1
 }
 
@@ -435,7 +333,6 @@ post_stop() {
 	remove_ipset_conf
 	flush_ipt_rules
 	flush_nat
-	del_cru
 	return 0
 }
 
