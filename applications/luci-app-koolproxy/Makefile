@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-koolproxy
 PKG_VERSION:=3.8.4
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -52,6 +52,7 @@ define Package/luci-app-koolproxy/install
 
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/koolproxy $(1)/usr/share/koolproxy/koolproxy
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/user.txt $(1)/usr/share/koolproxy/data/
+	rm -f $(PKG_BUILD_DIR)/rules/user.txt
 	$(INSTALL_DIR) $(1)/usr/share/koolproxy/data/rules
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rules/* $(1)/usr/share/koolproxy/data/rules/
 endef
