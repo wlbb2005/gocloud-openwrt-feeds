@@ -3,7 +3,7 @@
 Add the following line to the `feeds.conf.default` file of your [OpenWrt SDK](http://archive.openwrt.org/barrier_breaker/14.07/ramips/mt7620a/) workspace:
 
 ```
-src-git gocloud https://github.com/JimLee1996/gocloud-openwrt-feeds.git
+src-git gocloud https://github.com/wlbb2005/gocloud-openwrt-feeds.git
 ```
 
 Then run:
